@@ -17,7 +17,6 @@ data "aws_iam_policy_document" "ecs_iam_policy" {
 resource "aws_iam_role" "ecstaskexecution_iam_role" {
   name               = "ecstaskexecutionIamRole"
   assume_role_policy = data.aws_iam_policy_document.ecs_iam_policy.json
-  managed_policy_arns = [aws_iam_policy.policy_access_secret.arn]
 
   tags = {
       project = "${var.project}"

@@ -1,9 +1,9 @@
 terraform {
 
    backend "s3" {
-    bucket = "bucketVariable"
+    bucket = "samplebuildbucket"
     key = "tfstate/terraform.tfstate"
-    region = "regionVariable"
+    region = "us-east-1"
 }
 
 }
@@ -16,7 +16,6 @@ provider "aws" {
 
 module "networking" {
   source = "./modules/networking"
-
   project              = var.project
   environment          = var.environment
   region               = var.region
@@ -30,7 +29,6 @@ module "networking" {
 
 module "iam" {
   source = "./modules/iam"
-  depends_on           = [module.secretmanager]
   project              = var.project
   environment          = var.environment
 }

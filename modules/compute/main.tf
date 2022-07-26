@@ -19,45 +19,6 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
     {
       name = "${var.project}-${var.environment}-container"
       image = "${var.imageurl}"
-      command = ["serve"]
-      dependsOn = [
-    {
-        "containerName": "${var.project}-${var.environment}-init-container",
-        "condition": "COMPLETE"
-    }
-],
-      secrets = [
-       {
-    "name": "VTT_DBPASSWORD",
-    "valueFrom": "${var.secretmanager-id}" 
-      }
-      ],
-      environment = [
-       {
-    "name": "VTT_DBUSER",
-    "value": "dbadmin"
-},
-{
-    "name": "VTT_DBNAME",
-    "value": "app" 
-},
-{
-    "name": "VTT_DBPORT",
-    "value": "5432" 
-},
-{
-    "name": "VTT_DBHOST",
-    "value": "${var.rds-endpoint}" 
-},
-{
-    "name": "VTT_LISTENHOST",
-    "value": "0.0.0.0" 
-},
-{
-    "name": "VTT_LISTENPORT",
-    "value": "3000" 
-}
-      ],
        "healthCheck": {
         "command": [
           "CMD-SHELL",
@@ -78,69 +39,10 @@ resource "aws_ecs_task_definition" "aws-ecs-task" {
       },
        portMappings = [
         {
-          containerPort = 3000,
-          hostPort = 3000
+          containerPort = 8080,
+          hostPort = 8080
         }
       ]
-     
-      cpu = 256
-      memory = 512
-      networkMode = "awsvpc"
-    },
-    {
-      name = "${var.project}-${var.environment}-init-container"
-      image = "${var.imageurl}"
-      command = ["updatedb", "-s"]
-      secrets = [
-       {
-    "name": "VTT_DBPASSWORD",
-    "valueFrom": "${var.secretmanager-id}" 
-      }
-      ],
-      environment = [
-       {
-    "name": "VTT_DBUSER",
-    "value": "dbadmin"
-},
-{
-    "name": "VTT_DBNAME",
-    "value": "app" 
-},
-{
-    "name": "VTT_DBPORT",
-    "value": "5432" 
-},
-{
-    "name": "VTT_DBHOST",
-    "value": "${var.rds-endpoint}" 
-},
-{
-    "name": "VTT_LISTENHOST",
-    "value": "0.0.0.0" 
-},
-{
-    "name": "VTT_LISTENPORT",
-    "value": "3000" 
-}
-      ],
-       "healthCheck": {
-        "command": [
-          "CMD-SHELL",
-          "echo hello"
-        ],
-        "interval": 5,
-        "timeout": 15,
-        "retries": 2
-      },    
-      essential = false
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-group = "${aws_cloudwatch_log_group.log-group.id}"
-          awslogs-region = "${var.region}"
-          awslogs-stream-prefix = "${var.project}-${var.environment}-init"
-        }
-      }
      
       cpu = 256
       memory = 512
@@ -170,7 +72,7 @@ resource "aws_ecs_service" "aws-ecs-service" {
   task_definition      = aws_ecs_task_definition.aws-ecs-task.arn
   launch_type          = "FARGATE"
   scheduling_strategy  = "REPLICA"
-  desired_count        = 2
+  desired_count        = 1
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent         = 200
   force_new_deployment = true
@@ -185,14 +87,14 @@ resource "aws_ecs_service" "aws-ecs-service" {
   load_balancer {
     target_group_arn = "${var.target_group_arn}"
     container_name   = "${var.project}-${var.environment}-container"
-    container_port   = 3000
+    container_port   = 8080
   }
 }
 
 /* Scaling policies */
 
 resource "aws_appautoscaling_target" "ecs_target" {
-  max_capacity       = 3
+  max_capacity       = 1
   min_capacity       = 1
   resource_id        = "service/${aws_ecs_cluster.aws-ecs-cluster.name}/${aws_ecs_service.aws-ecs-service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
