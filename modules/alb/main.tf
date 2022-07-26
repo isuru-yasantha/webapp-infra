@@ -22,8 +22,8 @@ resource "aws_lb_target_group" "target_group" {
     interval            = "10"
     protocol            = "HTTP"
     matcher             = "200"
-    timeout             = "3"
-    path                = "/proc"
+    timeout             = "5"
+    path                = "/"
     unhealthy_threshold = "2"
   }
   tags = {
