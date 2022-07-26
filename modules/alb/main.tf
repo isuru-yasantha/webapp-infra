@@ -12,7 +12,7 @@ resource "aws_alb" "application_load_balancer" {
 
 resource "aws_lb_target_group" "target_group" {
   name        = "${var.project}-${var.environment}-tg"
-  port        = 3000
+  port        = 8080
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = var.vpc_id
@@ -23,7 +23,7 @@ resource "aws_lb_target_group" "target_group" {
     protocol            = "HTTP"
     matcher             = "200"
     timeout             = "3"
-    path                = "/healthcheck"
+    path                = "/proc"
     unhealthy_threshold = "2"
   }
   tags = {
