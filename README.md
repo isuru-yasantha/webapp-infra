@@ -138,7 +138,7 @@ After succesful execution of the script, you will get an ALB DNS endpoint as an 
 Sample CURL commands with outputs
 
 `` Health Check ``
-![Blank diagram](https://github.com/isuru-yasantha/webapp-infra/blob/a58334e07fbfa3ba02324dfdca369ca983b73951/images/DeploymentDiagram.jpg)
+![Blank diagram](https://github.com/isuru-yasantha/webapp-infra/blob/583666f1c08b33fbea20d9d0560e42f33ddb6f7e/images/healthycurl.png)
 
 
 `` Sample CURL command to add few numbers``
