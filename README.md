@@ -2,7 +2,7 @@
 
 ## Solution design and deployment diagram
 
-![Blank diagram](https://github.com/isuru-yasantha/assignment/blob/74d60ce06612cd299d665b6dae48d24100525b35/images/DeploymentDiagram.jpg)
+![Blank diagram](https://github.com/isuru-yasantha/webapp-infra/blob/a58334e07fbfa3ba02324dfdca369ca983b73951/images/DeploymentDiagram.jpg)
 
 ## Tools and services 
 
