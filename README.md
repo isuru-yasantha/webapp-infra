@@ -142,7 +142,7 @@ Sample CURL commands with outputs
 
 
 `` Sample CURL command to add few numbers``
-![Blank diagram](https://github.com/isuru-yasantha/webapp-infra/blob/29c6de0dd0803d9f5eaaf46546a4e1115b43701e/images/proccurl.png)
+![Blank diagram](https://github.com/isuru-yasantha/webapp-infra/blob/160bf19ea9aab9425b0464e97e8b4408c552f34a/images/proccurl.png)
 
 
 ## Improvements
