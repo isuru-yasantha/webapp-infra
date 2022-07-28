@@ -16,7 +16,6 @@
 - AWS EC2 (ALB)
 - AWS S3
 - AWS IAM
-- AWS RDS
 - AWS CloudWatch
 - AWS Codepipeline
 - AWS Code Build
@@ -29,7 +28,6 @@
  - AWS EC2 (ALB) - ALB is used to front the public traffic to the application. 
  - AWS S3 - S3 is used to store and maintain Terraform state file.
  - AWS IAM - IAM role is used to grant access to AWS resources and AWS services in order to perform AWS API calls.
- - AWS RDS - RDS is used for HA enabled database instance (Multi AZ).
  - AWS Cloudwatch - Cloudwatch is used to handling monitoring metrics, logs and alarms. 
  - AWS Codepipeline - Code pipeline is used for setup a CI/CD pipeline using AWS Code Build and AWS Code Deploy along with Github.
  - Docker - Building and storing Docker images.
