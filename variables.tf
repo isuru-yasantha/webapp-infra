@@ -33,5 +33,38 @@ variable "private_subnets_cidr" {
 variable "imageurl" {
   description = "container image"
   type        = string
-  default = "isuruwic/simple-webservice:v2"
+}
+
+variable "codebucket" {
+  description = "code bucket for cicd"
+}
+
+variable "codebucket_arn" {
+  description = "ARN of the code bucket"
+  type        = string
+}
+
+variable "docker_user" {
+  description = "Docker registry username"
+  type        = string
+}
+
+variable "docker_password" {
+  description = "Docker registry password"
+  type        = string
+}
+
+variable "git_repo" {
+  description = "Name of the git repo"
+  type        = string
+}
+
+variable "docker_registry_uri" {
+  description = "URI of the docker repo"
+  type        = string
+}
+
+variable "gitconnect_arn" {
+  description = "ARN of the git and aws pipeline connection"
+  type = string
 }
