@@ -32,7 +32,8 @@
  - AWS SecretManager - Secret Manager is used to store and maintain database user password which is referred by the web application.
  - AWS RDS - RDS is used for HA enabled database instance (Multi AZ).
  - AWS Cloudwatch - Cloudwatch is used to handling monitoring metrics, logs and alarms. 
- - AWS Codepipeline - Code pipeline is used for setup a CI/CD pipeline using AWS Code Build and AWS Code Deploy along with Github
+ - AWS Codepipeline - Code pipeline is used for setup a CI/CD pipeline using AWS Code Build and AWS Code Deploy along with Github.
+ - Docker - Building and storing Docker images.
 
 ## How to run?
 
@@ -43,7 +44,13 @@ Please use below mentioned steps to deploy cloud infrasture for this solution on
 1. Terraform. (Tested version for this solution - Terraform v1.0.11)
 2. AWS CLI.
 3. AWS IAM user(X) keys with AWS Administrator permissions.
-3. AWS S3 bucket with below access policy to grant access to above mentioned IAM user(X) to put objects into the bucket. (Ex:S3bucket). However, This bucket and required policy will create using env-creation.sh script during the deployment process. Hence, manual creation is not required.
+3. AWS S3 bucket with below access policy to grant access to above mentioned IAM user(X) to put objects into the bucket. (Ex:S3bucket). This bucket is used for storing terraform state file. However, This bucket and required policy will create using env-creation.sh script during the deployment process. Hence, manual creation is not required.
+4. AWS S3 bucket for storing Code Build and Code Pipeline related files. You can create a public S3 bucket for this purpose initial stage named as "cicdbucket". Furthermore, you can make the bucket private and update bucket policy to allow only put object action from aws code pipeline and aws code build IAM roles later.
+5. You can use webapp repo "isuru-yasantha/sample-web-app" as it is a public git repo or you can maintain source code in your own repo and update the terraform.tfvars file with the repo name accordingly. 
+6. You need to create a new source connection to your above mentioned git repo from AWS Codepile line under settings using Github (version2)
+and installed required apps using given window to connect AWS Codepipeline to you github repo. You can copy the connection ARN from the AWS Codepipeline connections and update it in terraform.tfvars for the value of "gitconnect_arn"
+7. Update your docker registry username and password in the terraform.tfvars.
+8. You can update your docker registry and URI for the image in "docker_registry_uri" if you plan to use your own docker registry. 
 ```
 {
 	"Version": "2012-10-17",
@@ -123,20 +130,20 @@ This Terraform script creates below resources,
 - IAM Role
 - ALB and Target group
 - ECS cluster, Tasks and Service
-- RDS instance
-- Code pipeline with build and deploy stages
+- AWS Code pipeline with an AWS Build project
 
 After succesful execution of the script, you will get an ALB DNS endpoint as an output below. Please use the output DNS entry to access the web appliaction using a web browser. 
 
 ```Ex: alb_endpoint = "lb_endpoint = "samplewebapp-dev-alb-186999999.us-east-1.elb.amazonaws.com""```
 
-Sample CURLS commands with outputs
+Sample CURL commands with outputs
 
 `` Health Check ``
-``` curl http://samplewebapp-dev-alb-186999999.us-east-1.elb.amazonaws.com --> Healthy%```
+![Blank diagram](https://github.com/isuru-yasantha/webapp-infra/blob/a58334e07fbfa3ba02324dfdca369ca983b73951/images/DeploymentDiagram.jpg)
+
 
 `` Sample CURL command to add few numbers``
-``` curl -d '{"sum of the numbers: " : [1, 100, 3,12]}' -H "Content-Type: application/json" -X POST http://samplewebapp-dev-alb-1869999999.us-east-1.elb.amazonaws.com/proc ---> "{\"sum of the numbers: \":{\"sum\":116}}"%```
+![Blank diagram](https://github.com/isuru-yasantha/webapp-infra/blob/a58334e07fbfa3ba02324dfdca369ca983b73951/images/DeploymentDiagram.jpg)
 
 
 ## Improvements
@@ -145,49 +152,41 @@ Sample CURLS commands with outputs
 
     #### Data at rest:
 
-    - AWS KMS key based encryption for AWS S3, AWS RDS and AWS Secret Manager
+    - AWS KMS key based encryption for AWS S3.
+    - Maintain passwords/credentials which are used as environment varilables in AWS Secret Manager.
 
     #### Data at transit:
 
     - Enabling HTTPS listener at ALB and secure with TLS certificate using AWS ACM for the public traffic. 
-    - Enabling HTTPS communication between app and RDS if app is supporting for establishing the HTTPS DB connection. 
 
     #### Network Security
 
-    - Enabling AWS Shield for DDOS protection
-    - Adding AWS Network ACL Rules for subnet traffic management
-    - Enabling AWS GuardDuty for sending alerts based on suspecious behaviours
+    - Enabling AWS Shield for DDOS protection.
+    - Adding AWS Network ACL Rules for subnet traffic management.
+    - Enabling AWS GuardDuty for sending alerts based on suspecious behaviours.
 
     #### Web application Security
 
-    - Enable AWS WAF for ALB in order to protect from web based attacks
-    - Enable traffic to ALB only from AWS CDN
-    - Maintaning public domain name with Route53 and certificate via ACM for the domain
+    - Enable AWS WAF for ALB in order to protect from web based attacks.
+    - Maintaning public domain name with Route53 and certificate via ACM for the domain.
 
     #### Auditing
 
-    - Enabling access logs, auth logs, general logs on AWS ALB,AWS RDS, AWS ECS, AWS S3, AWS Secret Manager if available
-    - Enabling AWS Cloudtrails in the AWS region which AWS resources are provisioned
-    - Enabling metric based and log based AWS Cloudwatch alarms for sending notifications via AWS SNS to stake holders
-
-    ### Database
-
-    - Creating separate DB user in the DB and grant access only particular DB for that user in order to connect to the DB from the application
-    - Attaching seperate option group and parameter group for the RDS with finetuned values
+    - Enabling access logs, auth logs, general logs on AWS ALB, AWS ECS, AWS S3, AWS Secret Manager if available.
+    - Enabling AWS Cloudtrails in the AWS region which AWS resources are provisioned.
+    - Enabling metric based and log based AWS Cloudwatch alarms for sending notifications via AWS SNS to stake holders.
 
 - Performance enhancements  
 
-    - Implementing a CDN to provide web application to the endusers
-    - Implementing cloudwatch based alarms related to the scaling activities in ECS, error code based alarms for ALB, target group based alarms for unhealthy targets, RDS based alarms for critical metrics such as cpu,memory and storage (Attending issues in advance)
-    - Implementing 3rd party health check or uptime monitor for the website
-    - Setting up a seperate ECR for managing internal docker images
+    - Implementing cloudwatch based alarms related to the scaling activities in ECS, error code based alarms for ALB, target group based alarms for unhealthy targets (Attending issues in advance).
+    - Implementing 3rd party health check or uptime monitor for the web endpoint.
+    - Setting up a seperate ECR for managing internal docker images.
 
 - Backups  
 
-    - Enabling backups for AWS RDS, lifecycle policy for AWS S3 storage, log retention policy for AWS Cloudwatch logs
-    - Implementing remote backend for TF state using Dynamo DB based solution
-    - Replicatiing ECR regionally if required
-
+    - Enabling backups for lifecycle policy for AWS S3 storage, log retention policy for AWS Cloudwatch logs.
+    - Implementing remote backend for TF state using Dynamo DB based solution.
+    - Replicatiing ECR regionally if required.
 
 - Cost savings
 
@@ -199,11 +198,9 @@ Sample CURLS commands with outputs
    - Implementing AWS recommendations after analyzing them closely according to the application requirements. 
 
 
-
-
 ### CI/CD Pipeline
 
-Diagram describes the CI/CD process for this web application that can be implemented using AWS services.
+Diagram describes the CI/CD process for this web application which is implemented using AWS services.
 
 ![Blank diagram](https://github.com/isuru-yasantha/assignment/blob/0c27510c590b8e6d20106981c5d16e9729daf57a/images/cicdProcess.jpg)
 

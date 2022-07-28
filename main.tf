@@ -1,9 +1,9 @@
 terraform {
 
    backend "s3" {
-    bucket = "buildbucketms"
+    bucket = "bucketVariable"
     key = "tfstate/terraform.tfstate"
-    region = "us-east-1"
+    region = "regionVariable"
 }
 
 }
