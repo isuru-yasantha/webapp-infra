@@ -44,7 +44,7 @@ Please use below mentioned steps to deploy cloud infrasture for this solution on
 3. AWS S3 bucket with below access policy to grant access to above mentioned IAM user(X) to put objects into the bucket. (Ex:S3bucket). This bucket is used for storing terraform state file. However, This bucket and required policy will create using env-creation.sh script during the deployment process. Hence, manual creation is not required.
 4. AWS S3 bucket for storing Code Build and Code Pipeline related files. You can create a public S3 bucket for this purpose initial stage named as "cicdbucket". Furthermore, you can make the bucket private and update bucket policy to allow only put object action from aws code pipeline and aws code build IAM roles later.
 5. You can use webapp repo "isuru-yasantha/sample-web-app" as it is a public git repo or you can maintain source code in your own repo and update the terraform.tfvars file with the repo name accordingly. 
-6. You need to create a new source connection to your above mentioned git repo from AWS Codepile line under settings using Github (version2)
+6. You need to create a new source connection to your above mentioned git repo from AWS Codepipeline under settings->connections using Github (version2)
 and installed required apps using given window to connect AWS Codepipeline to you github repo. You can copy the connection ARN from the AWS Codepipeline connections and update it in terraform.tfvars for the value of "gitconnect_arn"
 7. Update your docker registry username and password in the terraform.tfvars.
 8. You can update your docker registry and URI for the image in "docker_registry_uri" if you plan to use your own docker registry. 
