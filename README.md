@@ -201,7 +201,7 @@ Sample CURL commands with outputs
 
 Diagram describes the CI/CD process for this web application which is implemented using AWS services.
 
-![Blank diagram](https://github.com/isuru-yasantha/assignment/blob/0c27510c590b8e6d20106981c5d16e9729daf57a/images/cicdProcess.jpg)
+![Blank diagram](https://github.com/isuru-yasantha/webapp-infra/blob/99d94442cd04d02e8e8108c3b59ca8fe06afc79c/images/CICDPipeline.jpg)
 
 ### Monitoring, Logging and Alerts
 
