@@ -29,7 +29,6 @@
  - AWS EC2 (ALB) - ALB is used to front the public traffic to the application. 
  - AWS S3 - S3 is used to store and maintain Terraform state file.
  - AWS IAM - IAM role is used to grant access to AWS resources and AWS services in order to perform AWS API calls.
- - AWS SecretManager - Secret Manager is used to store and maintain database user password which is referred by the web application.
  - AWS RDS - RDS is used for HA enabled database instance (Multi AZ).
  - AWS Cloudwatch - Cloudwatch is used to handling monitoring metrics, logs and alarms. 
  - AWS Codepipeline - Code pipeline is used for setup a CI/CD pipeline using AWS Code Build and AWS Code Deploy along with Github.
@@ -86,7 +85,7 @@ and installed required apps using given window to connect AWS Codepipeline to yo
 ### Steps to run
 
 1. Clone the GitHub repo.
-2. If you need to update the default values mentioned in the terraform.tfvars file, please update them in terraform.tfvars file.
+2. Please update the default values mentioned in the terraform.tfvars file based on your input values. 
 ```
 project               = "samplewebapp"
 environment           = "dev"
