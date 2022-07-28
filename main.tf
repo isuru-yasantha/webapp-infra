@@ -1,7 +1,7 @@
 terraform {
 
    backend "s3" {
-    bucket = "samplebuildbucket"
+    bucket = "buildbucketms"
     key = "tfstate/terraform.tfstate"
     region = "us-east-1"
 }
@@ -31,6 +31,8 @@ module "iam" {
   source = "./modules/iam"
   project              = var.project
   environment          = var.environment
+  codebucket_arn       = var.codebucket_arn
+  gitconnect_arn       = var.gitconnect_arn
 }
 
 /* Compute Module */
@@ -60,3 +62,20 @@ module "alb" {
   alb_sg_id            = module.networking.alb_sg_id
 }
 
+/* Pipeline Module */
+
+module "pipeline" {
+  source = "./modules/pipeline"
+  depends_on = [module.compute]
+  project              = var.project
+  environment          = var.environment
+  codebucket           = var.codebucket
+  codebucket_arn       = var.codebucket_arn
+  docker_user          = var.docker_user
+  docker_password      = var.docker_password
+  docker_registry_uri  = var.docker_registry_uri
+  git_repo             = var.git_repo
+  gitconnect_arn       = var.gitconnect_arn
+  pipeline_role_arn    = module.iam.codepipeline_iam_role_arn
+  codebuild_role_arn   = module.iam.codebuild_iam_role_arn
+}
