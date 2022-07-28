@@ -1,4 +1,4 @@
-# Servian: Tech Challenge
+# Enea: Tech Challenge
 
 ## Solution design and deployment diagram
 
@@ -9,15 +9,18 @@
 - Terraform 
 - GitHub
 - AWS
+- Docker
 ```
 - AWS VPC
 - AWS ECS
 - AWS EC2 (ALB)
 - AWS S3
 - AWS IAM
-- AWS Secret Manager
 - AWS RDS
 - AWS CloudWatch
+- AWS Codepipeline
+- AWS Code Build
+- AWS Code Deploy
 ```
  Above mentioned AWS services are selected to design and deploy this web application considering complexity to design, implement and operational overhead. Basic security features are implemented in this solution at this stage. However, there are things that we can improve for enhancing the security, performance and cost saving aspects which discuss under the improvement section.
 
@@ -29,6 +32,7 @@
  - AWS SecretManager - Secret Manager is used to store and maintain database user password which is referred by the web application.
  - AWS RDS - RDS is used for HA enabled database instance (Multi AZ).
  - AWS Cloudwatch - Cloudwatch is used to handling monitoring metrics, logs and alarms. 
+ - AWS Codepipeline - Code pipeline is used for setup a CI/CD pipeline using AWS Code Build and AWS Code Deploy along with Github
 
 ## How to run?
 
@@ -77,13 +81,22 @@ Please use below mentioned steps to deploy cloud infrasture for this solution on
 1. Clone the GitHub repo.
 2. If you need to update the default values mentioned in the terraform.tfvars file, please update them in terraform.tfvars file.
 ```
-project               = "testapp"
+project               = "samplewebapp"
 environment           = "dev"
 region                = "us-east-1"
 availability_zones    = ["us-east-1a", "us-east-1b"]
-vpc_cidr              = "10.0.0.0/16"
-public_subnets_cidr   = ["10.0.0.0/24", "10.0.1.0/24"] //List of Public subnet cidr range
-private_subnets_cidr  = ["10.0.10.0/24", "10.0.11.0/24"] //List of private subnet cidr range
+vpc_cidr              = "10.92.0.0/16"
+public_subnets_cidr   = ["10.92.0.0/24", "10.92.1.0/24"] //List of Public subnet cidr range
+private_subnets_cidr  = ["10.92.10.0/24", "10.92.11.0/24"] //List of private subnet cidr range
+
+imageurl              = "isuruwic/simple-webservice:v2"  // Base Docker Image for the web app
+codebucket            = "tfstatebucket" // S3 Bucket for storing tfstate file
+codebucket_arn        = "arn:aws:s3:::cicdbucket"  // S3 bucket for CI/CD pipeline related files
+docker_user           = "xxxxxxxxx" // Username for docker.io registry
+docker_password       = "xxxxxxxxx" // Password for docker.io registry
+git_repo              = "isuru-yasantha/sample-web-app" // python web app git repo
+docker_registry_uri   = "isuruwic/simple-webservice" // Docker registy URI
+gitconnect_arn        = "GIT_CONNECTION_ARN" // ARN of the Github version 2 connection in AWS codepipeline
 ```
 2. Provide executable permissions to the env-creation.sh 
 ```chmod +x env-creation.sh```
@@ -111,13 +124,20 @@ This Terraform script creates below resources,
 - ALB and Target group
 - ECS cluster, Tasks and Service
 - RDS instance
-- Secret Manager entry
+- Code pipeline with build and deploy stages
 
 After succesful execution of the script, you will get an ALB DNS endpoint as an output below. Please use the output DNS entry to access the web appliaction using a web browser. 
 
-```Ex: alb_endpoint = "testapp-dev-alb-101191681.us-east-1.elb.amazonaws.com"```
+```Ex: alb_endpoint = "lb_endpoint = "samplewebapp-dev-alb-186999999.us-east-1.elb.amazonaws.com""```
 
-![Blank diagram](https://github.com/isuru-yasantha/assignment/blob/663cb1b24bf99e855eda332eb4563447b680793b/images/app.png)
+Sample CURLS commands with outputs
+
+`` Health Check ``
+``` curl http://samplewebapp-dev-alb-186999999.us-east-1.elb.amazonaws.com --> Healthy%```
+
+`` Sample CURL command to add few numbers``
+``` curl -d '{"sum of the numbers: " : [1, 100, 3,12]}' -H "Content-Type: application/json" -X POST http://samplewebapp-dev-alb-1869999999.us-east-1.elb.amazonaws.com/proc ---> "{\"sum of the numbers: \":{\"sum\":116}}"%```
+
 
 ## Improvements
 
